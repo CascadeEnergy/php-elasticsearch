@@ -23,13 +23,13 @@ class BulkTest extends \PHPUnit_Framework_TestCase
     public function testItShouldAllowItemsToBeAddedToTheBulkOperation()
     {
         $this->bulk->addItem('idFoo', 'foo');
-        $this->bulk->addItem('idBar', 'bar');
+        $this->bulk->addItem('idBar', 'bar', 'update');
 
         $this->assertAttributeEquals(
             [
                 ['index' => ['_id' => 'idFoo']],
                 'foo',
-                ['index' => ['_id' => 'idBar']],
+                ['update' => ['_id' => 'idBar']],
                 'bar'
             ],
             'itemList',

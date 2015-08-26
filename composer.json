@@ -1,5 +1,5 @@
 {
-  "name": "CascadeEnergy/php-elasticsearch",
+  "name": "cascade-energy/php-elasticsearch",
   "description": "Support classes for ElasticSearch in PHP",
   "minimum-stability": "stable",
   "license": "MIT",

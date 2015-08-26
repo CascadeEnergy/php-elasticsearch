@@ -43,9 +43,9 @@ class Bulk
         $this->type = $type;
     }
 
-    public function addItem($id, $item)
+    public function addItem($id, $item, $operation = 'index')
     {
-        $this->itemList[] = ['index' => ['_id' => $id]];
+        $this->itemList[] = [$operation => ['_id' => $id]];
         $this->itemList[] = $item;
         $this->itemCount++;
 
