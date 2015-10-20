@@ -5,6 +5,9 @@ namespace CascadeEnergy\ElasticSearch;
 use Elasticsearch\Client;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
+/**
+ * This factory creates Bulk objects that are configured with the given Elasticsearch client and EventDispatcher.
+ */
 class BulkFactory
 {
     /** @var Client */
@@ -14,7 +17,7 @@ class BulkFactory
     private $eventDispatcher;
 
     /**
-     * @param Client $elasticSearchClient
+     * @param Client $elasticSearchClient The Elasticsearch client
      */
     public function __construct(Client $elasticSearchClient)
     {
@@ -22,7 +25,7 @@ class BulkFactory
     }
 
     /**
-     * @param EventDispatcherInterface $eventDispatcher
+     * @param EventDispatcherInterface $eventDispatcher The event dispatcher object
      */
     public function setEventDispatcher(EventDispatcherInterface $eventDispatcher)
     {
@@ -30,10 +33,10 @@ class BulkFactory
     }
 
     /**
-     * @param string $indexName
-     * @param string $type
+     * @param string $indexName The index against which bulk operations will be performed
+     * @param string $type The type against which bulk operations will be performed
      *
-     * @return Bulk
+     * @return Bulk A Bulk instance configured with the given index and type
      */
     public function createBulk($indexName, $type)
     {

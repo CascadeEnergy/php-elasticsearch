@@ -4,6 +4,9 @@ namespace CascadeEnergy\ElasticSearch\Events;
 
 use Symfony\Component\EventDispatcher\Event;
 
+/**
+ * An event which is emitted whenever a Bulk instance flushes its current content to Elasticsearch.
+ */
 class BulkFlushEvent extends Event
 {
     /** @var string */
@@ -15,6 +18,11 @@ class BulkFlushEvent extends Event
     /** @var string */
     private $type;
 
+    /**
+     * @param string $index The index data was flushed to
+     * @param string $type The type of data flushed
+     * @param int $rowCount The number of items flushed
+     */
     public function __construct($index, $type, $rowCount)
     {
         $this->index = $index;
@@ -23,7 +31,7 @@ class BulkFlushEvent extends Event
     }
 
     /**
-     * @return string
+     * @return string The index data was flushed to
      */
     public function getIndex()
     {
@@ -31,7 +39,7 @@ class BulkFlushEvent extends Event
     }
 
     /**
-     * @return int
+     * @return int The number of items flushed
      */
     public function getRowCount()
     {
@@ -39,7 +47,7 @@ class BulkFlushEvent extends Event
     }
 
     /**
-     * @return string
+     * @return string The type of data flushed
      */
     public function getType()
     {
