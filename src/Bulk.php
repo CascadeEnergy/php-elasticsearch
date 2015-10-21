@@ -77,12 +77,24 @@ class Bulk
      * @param $id
      * @param $item
      * @param string $operation
+     * @param string|null $index The index to operate on -- overrides the default for this Bulk object
+     * @param string|null $type The type to operate on -- overrides the default for this Bulk object
      *
      * @throws PartialFailureException
      */
-    public function addItem($id, $item, $operation = 'index')
+    public function addItem($id, $item, $operation = 'index', $index = null, $type = null)
     {
-        $this->itemList[] = [$operation => ['_id' => $id]];
+        $metadata = ['_id' => $id];
+
+        if (!is_null($index)) {
+             $metadata['_index'] = $index;
+        }
+
+        if (!is_null($type)) {
+            $metadata['_type'] = $type;
+        }
+
+        $this->itemList[] = [$operation => $metadata];
         $this->itemList[] = $item;
         $this->itemCount++;
 
