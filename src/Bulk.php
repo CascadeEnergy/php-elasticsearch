@@ -158,8 +158,8 @@ class Bulk
 
         $result = $this->elasticSearch->bulk($params);
 
-        if (!empty($result->errors)) {
-            throw new PartialFailureException(count($result->errors) . " items failed.", $result->errors);
+        if (boolval($result->errors)) {
+            throw new PartialFailureException("Some items failed.");
         }
 
         $this->itemList = [];
