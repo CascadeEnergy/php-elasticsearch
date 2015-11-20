@@ -158,6 +158,15 @@ class Bulk
 
         $result = $this->elasticSearch->bulk($params);
 
+        if (count($result->items) != $this->itemCount) {
+            $expected = $this->itemCount;
+            $actual = count($result->items);
+
+            throw new PartialFailureException(
+                "The wrong number of items was stored; expected $expected, but stored $actual"
+            );
+        }
+
         if (boolval($result->errors)) {
             throw new PartialFailureException("Some items failed.");
         }
