@@ -47,7 +47,11 @@ class BulkTest extends \PHPUnit_Framework_TestCase
 
     public function testItShouldFlushAutomaticallyWhenTooManyItemsHaveBeenAdded()
     {
-        $this->client->expects($this->once())->method('bulk');
+        $bulkResponse = new \stdClass();
+        $bulkResponse->items = ['foo', 'bar', 'baz', 'qux', 'quux'];
+        $bulkResponse->errors = false;
+
+        $this->client->expects($this->once())->method('bulk')->willReturn($bulkResponse);
 
         $this->bulk->addItem('idFoo', 'foo');
         $this->bulk->addItem('idBar', 'bar');
@@ -60,7 +64,11 @@ class BulkTest extends \PHPUnit_Framework_TestCase
 
     public function testItShouldFlushWhenBeginAndEndAreCalled()
     {
-        $this->client->expects($this->exactly(2))->method('bulk');
+        $bulkResponse = new \stdClass();
+        $bulkResponse->items = ['foo'];
+        $bulkResponse->errors = false;
+
+        $this->client->expects($this->exactly(2))->method('bulk')->willReturn($bulkResponse);
 
         $this->bulk->addItem('idFoo', 'foo');
         $this->bulk->begin();
@@ -77,6 +85,10 @@ class BulkTest extends \PHPUnit_Framework_TestCase
 
     public function testItShouldSendAllTheItemsInTheListToTheBulkEndpoint()
     {
+        $bulkResponse = new \stdClass();
+        $bulkResponse->items = ['foo', 'bar'];
+        $bulkResponse->errors = false;
+
         $expectedParameters = [
             'index' => 'index',
             'type' => 'type',
@@ -88,17 +100,33 @@ class BulkTest extends \PHPUnit_Framework_TestCase
             ]
         ];
 
-        $this->client->expects($this->once())->method('bulk')->with($expectedParameters);
+        $this->client->expects($this->once())->method('bulk')->with($expectedParameters)->willReturn($bulkResponse);
 
         $this->bulk->addItem('idFoo', 'foo');
         $this->bulk->addItem('idBar', 'bar');
         $this->bulk->flush();
     }
 
-    public function testItShouldRaiseAnExceptionIfSomeItemsFail()
+    public function testItShouldRaiseAnExceptionIfSomeItemsAreNotInTheSuccessfulItemsList()
     {
         $result = new \stdClass();
-        $result->errors = ['qux', 'quux'];
+        $result->items = ['foo'];
+        $result->errors = false;
+
+        $this->client->expects($this->once())->method('bulk')->willReturn($result);
+
+        $this->setExpectedException('CascadeEnergy\ElasticSearch\Exceptions\PartialFailureException');
+
+        $this->bulk->addItem('idFoo', 'foo');
+        $this->bulk->addItem('idBar', 'bar');
+        $this->bulk->flush();
+    }
+
+    public function testItShouldRaiseAnExceptionIfTheErrorListIsNotEmpty()
+    {
+        $result = new \stdClass();
+        $result->items = ['foo'];
+        $result->errors = true;
 
         $this->client->expects($this->once())->method('bulk')->willReturn($result);
 
