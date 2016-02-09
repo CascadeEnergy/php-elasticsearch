@@ -16,7 +16,7 @@ class SearchResponseIteratorTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->client = $this->getMock('Elasticsearch\Client');
+        $this->client = $this->getMockBuilder('Elasticsearch\Client')->disableOriginalConstructor()->getMock();
         $this->params = ['scroll' => '1m'];
     }
 
