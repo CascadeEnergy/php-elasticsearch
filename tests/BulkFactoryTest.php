@@ -14,7 +14,7 @@ class BulkFactoryTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->client = $this->getMock('Elasticsearch\Client');
+        $this->client = $this->getMockBuilder('Elasticsearch\Client')->disableOriginalConstructor()->getMock();
 
         /** @noinspection PhpParamsInspection */
         $this->bulkFactory = new BulkFactory($this->client);
