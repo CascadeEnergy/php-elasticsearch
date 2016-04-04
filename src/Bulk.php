@@ -174,4 +174,13 @@ class Bulk
         $this->itemList = [];
         $this->itemCount = 0;
     }
+
+    /**
+     * Clears all items in the Bulk object.
+     */
+    public function clear()
+    {
+        $this->itemList = [];
+        $this->itemCount = 0;
+    }
 }
