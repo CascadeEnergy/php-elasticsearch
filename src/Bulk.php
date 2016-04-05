@@ -171,8 +171,7 @@ class Bulk
             throw new PartialFailureException("Some items failed.");
         }
 
-        $this->itemList = [];
-        $this->itemCount = 0;
+        $this->clear();
     }
 
     /**

@@ -139,8 +139,8 @@ class BulkTest extends \PHPUnit_Framework_TestCase
     public function testItShouldEmptyTheItemListOnClear()
     {
         $this->bulk->addItem('idfoo','foo');
-        $this->assertEquals($this->bulk->getItemCount(), 1);
+        $this->assertAttributeEquals(1, 'itemCount', $this->bulk);
         $this->bulk->clear();
-        $this->assertEquals($this->bulk->getItemCount(), 0);
+        $this->assertAttributeEquals(0, 'itemCount', $this->bulk);
     }
 }
