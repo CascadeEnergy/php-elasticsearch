@@ -87,7 +87,7 @@ class Bulk
         $metadata = ['_id' => $id];
 
         if (!is_null($index)) {
-             $metadata['_index'] = $index;
+            $metadata['_index'] = $index;
         }
 
         if (!is_null($type)) {
@@ -95,7 +95,11 @@ class Bulk
         }
 
         $this->itemList[] = [$operation => $metadata];
-        $this->itemList[] = $item;
+
+        if (!is_null($item)) {
+            $this->itemList[] = $item;
+        }
+
         $this->itemCount++;
 
         if ($this->autoFlushThreshold > 0 && $this->getItemCount() >= $this->autoFlushThreshold) {
@@ -132,6 +136,15 @@ class Bulk
     }
 
     /**
+     * Clears the item list without flushing
+     */
+    public function clear()
+    {
+        $this->itemCount = 0;
+        $this->itemList = [];
+    }
+
+    /**
      * Flushes the items in this Bulk object to Elasticsearch. If there are no items, this method does nothing.
      *
      * (In particular, note that if no items are in the Bulk object, the bulk flush event is not fired.)
@@ -158,28 +171,28 @@ class Bulk
 
         $result = $this->elasticSearch->bulk($params);
 
-        if (count($result->items) != $this->itemCount) {
+        if (count($result['items']) != $this->itemCount) {
             $expected = $this->itemCount;
-            $actual = count($result->items);
+            $actual = count($result['items']);
 
             throw new PartialFailureException(
                 "The wrong number of items was stored; expected $expected, but stored $actual"
             );
         }
 
-        if (boolval($result->errors)) {
-            throw new PartialFailureException("Some items failed.");
+
+        if (boolval($result['errors'])) {
+            $errorList = [];
+
+            foreach ($result['items'] as $item) {
+                if ($item['index']['status'] < 200 || $item['index']['status'] >= 300) {
+                    $errorList[] = $item;
+                }
+            }
+
+            throw new PartialFailureException("Some items failed. " . json_encode($errorList));
         }
 
         $this->clear();
-    }
-
-    /**
-     * Clears all items in the Bulk object.
-     */
-    public function clear()
-    {
-        $this->itemList = [];
-        $this->itemCount = 0;
     }
 }
