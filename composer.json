@@ -7,6 +7,10 @@
     {
       "name": "Charles Berube",
       "email": "charles.berube@cascadeenergy.com"
+    },
+    {
+      "name": "Nick Warlen",
+      "email": "nick.warlen@cascadeenergy.com"
     }
   ],
   "autoload": {

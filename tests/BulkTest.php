@@ -47,9 +47,9 @@ class BulkTest extends \PHPUnit_Framework_TestCase
 
     public function testItShouldFlushAutomaticallyWhenTooManyItemsHaveBeenAdded()
     {
-        $bulkResponse = new \stdClass();
-        $bulkResponse->items = ['foo', 'bar', 'baz', 'qux', 'quux'];
-        $bulkResponse->errors = false;
+        $bulkResponse = [];
+        $bulkResponse['items'] = ['foo', 'bar', 'baz', 'qux', 'quux'];
+        $bulkResponse['errors'] = false;
 
         $this->client->expects($this->once())->method('bulk')->willReturn($bulkResponse);
 
@@ -64,9 +64,9 @@ class BulkTest extends \PHPUnit_Framework_TestCase
 
     public function testItShouldFlushWhenBeginAndEndAreCalled()
     {
-        $bulkResponse = new \stdClass();
-        $bulkResponse->items = ['foo'];
-        $bulkResponse->errors = false;
+        $bulkResponse = [];
+        $bulkResponse['items'] = ['foo'];
+        $bulkResponse['errors'] = false;
 
         $this->client->expects($this->exactly(2))->method('bulk')->willReturn($bulkResponse);
 
@@ -85,9 +85,9 @@ class BulkTest extends \PHPUnit_Framework_TestCase
 
     public function testItShouldSendAllTheItemsInTheListToTheBulkEndpoint()
     {
-        $bulkResponse = new \stdClass();
-        $bulkResponse->items = ['foo', 'bar'];
-        $bulkResponse->errors = false;
+        $bulkResponse = [];
+        $bulkResponse['items'] = ['foo', 'bar'];
+        $bulkResponse['errors'] = false;
 
         $expectedParameters = [
             'index' => 'index',
@@ -109,9 +109,9 @@ class BulkTest extends \PHPUnit_Framework_TestCase
 
     public function testItShouldRaiseAnExceptionIfSomeItemsAreNotInTheSuccessfulItemsList()
     {
-        $result = new \stdClass();
-        $result->items = ['foo'];
-        $result->errors = false;
+        $result = [];
+        $result['items'] = ['foo'];
+        $result['errors'] = false;
 
         $this->client->expects($this->once())->method('bulk')->willReturn($result);
 
@@ -124,9 +124,9 @@ class BulkTest extends \PHPUnit_Framework_TestCase
 
     public function testItShouldRaiseAnExceptionIfTheErrorListIsNotEmpty()
     {
-        $result = new \stdClass();
-        $result->items = ['foo'];
-        $result->errors = true;
+        $result = [];
+        $result['items'] = ['foo' => ['index' => ['status' => 100]]];
+        $result['errors'] = true;
 
         $this->client->expects($this->once())->method('bulk')->willReturn($result);
 
@@ -134,5 +134,13 @@ class BulkTest extends \PHPUnit_Framework_TestCase
 
         $this->bulk->addItem('idFoo', 'foo');
         $this->bulk->flush();
+    }
+
+    public function testItShouldEmptyTheItemListOnClear()
+    {
+        $this->bulk->addItem('idfoo','foo');
+        $this->assertAttributeEquals(1, 'itemCount', $this->bulk);
+        $this->bulk->clear();
+        $this->assertAttributeEquals(0, 'itemCount', $this->bulk);
     }
 }
